@@ -101,10 +101,14 @@ public:
  Central2D(real w, real h,     // Domain width / height
 	   int nx, int ny,     // Number of cells in x/y (without ghosts)
 	   int nx_subdg, int ny_subdg,
+	   int nx_subd, int ny_subd,
+	   int imin, int imax, int jmin, int jmax,
 	   int NT,
 	   real cfl = 0.45) :  // Max allowed CFL number
     
-      nx(nx), ny(ny),NT(1),
+    nx(nx), ny(ny), NT(NT),
+      nx_subdg(nx_subdg),ny_subdg(ny_subdg),
+      nx_subd(nx_subd),ny_subd(ny_subd),
       nx_all(nx + 2*nghost),
       ny_all(ny + 2*nghost),
       dx(w/nx), dy(h/ny),
@@ -148,6 +152,9 @@ private:
     static constexpr int nghost = 3;   // Number of ghost cells
 
     const int nx, ny;          // Number of (non-ghost) cells in x/y
+    const int nx_subdg,ny_subdg;
+    const int NT;
+    const int imin,imax,jmin,jmax;
     const int nx_all, ny_all;  // Total cells in x/y (including ghost)
     const real dx, dy;         // Cell size in x/y
     const real cfl;            // Allowed CFL number
@@ -194,7 +201,7 @@ private:
     }
 
     // Stages of the main algorithm
-    void apply_periodic();
+    void apply_periodic(int& imin, int& imax, int& jmin, int& jmax);
     void compute_fg_speeds(real& cx, real& cy);
     void limited_derivs();
     void compute_step(int io, real dt);
@@ -240,7 +247,7 @@ void Central2D<Physics, Limiter>::init(F f)
  */
 
 template <class Physics, class Limiter>
-void Central2D<Physics, Limiter>::apply_periodic()
+  void Central2D<Physics, Limiter>::apply_periodic(imin,imax,jmin,jmax)
 {
   // Copy data between right and left boundaries
 
@@ -271,7 +278,7 @@ void Central2D<Physics, Limiter>::apply_periodic()
 	u1(ix,          iy) = uwrap(ix,          iy);
       }
   }
-
+}
 
 /**
  * ### Initial flux and speed computations
@@ -421,10 +428,10 @@ template <class Physics, class Limiter>
     // Set up thread specific variables
     int irank = omp_get_thread_num();
 
-    int imin = nghost + (mod(irank % npx) - 1)*nx_subd;
-    int imax = imin + nx_subd - 1;
-    int jmin = nghost + floor((irank - 1)/npx)*yvals;
-    int jmax = jmin + ny_subd - 1;
+    imin = nghost + (mod(irank % npx) - 1)*nx_subd;
+    imax = imin + nx_subd - 1;
+    jmin = nghost + floor((irank - 1)/npx)*yvals;
+    jmax = jmin + ny_subd - 1;
 
     // These nghost here are based on wave speed, can change
     int iming = imin - nghost;
@@ -464,7 +471,7 @@ template <class Physics, class Limiter>
       //Copy back subdomain to placeholder
       u1(imin:imax,jmin:jmax) = ud(nghost:nxsubd-1,nghost:nysubd-1);
       // Apply periodic BCs for necessary regions
-      apply_periodic();
+      apply_periodic(imin,imax,jmin,jmax);
 
       // Wait until everything completes solving and copying
       #pragma omp barrier

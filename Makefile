@@ -17,7 +17,7 @@ include Makefile.in.$(PLATFORM)
 # Main driver and sample run
 
 
-shallow: driverVEC.cc central2dvec.h shallow2dvec.h minmodvec.h meshiovec.h
+shallow: driver_decomp.cc central2d_decomp.h shallow2d.h minmod.h meshio.h
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 .PHONY: run big
@@ -70,7 +70,7 @@ wave.out: shallow
 shallow.pdf: intro.md shallow.md
 	pandoc --toc $^ -o $@
 
-shallow.md: shallow2d.h minmod.h central2d.h meshio.h driver.cc
+shallow.md: shallow2d.h minmod.h central2d_decomp.h meshio.h driver_decomp.cc
 	ldoc $^ -o $@
 
 # ===
