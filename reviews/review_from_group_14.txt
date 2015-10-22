@@ -1,0 +1,9 @@
+Review for Group 14 from Group 13
+
+What you have done well:
+- You did well with the strong scaling studies in varying both the number of cells per side and also the number of frames, and it is interesting that you divided the study for different functions too.
+
+Suggestions for improvement:
+- It was unclear what changes to the starting code you have tried and tested so far - some performance comparison between your code and the original would be good.
+- You can try running weak scaling studies as well when you have parallelization working.
+- An easy way to make some gains in serial tuning is to add on compiler optimization flags like HW1.
