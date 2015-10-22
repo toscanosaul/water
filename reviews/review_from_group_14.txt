@@ -1,0 +1,11 @@
+Group 16 seems to be missing so we decided to review your group instead.
+
+What you did well:
+- You have a detailed breakdown of the timings of each function.
+- You seem to have started attempting domain decomposition, which we and the other group we reviewed have not started to implement in code at the time of submission.
+- You have used restrict and compiler flags and hopefully they made easy gains.
+- The idea to use a "struct of vectors" style is interesting.
+
+Suggestions for improvement:
+- It is unclear whether your enhancements actually made any performance gains, or at least this was not evident from your experiment results. However nobody seems to be having success here at the moment.
+- You do not mention vectorization in your report. It is something Prof. Bindel has been focusing on and it could net you significant gains if implemented properly. So it's something to consider.
